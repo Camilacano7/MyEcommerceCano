@@ -10,11 +10,14 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 
-const renderItemTask = ({item}) => {
+const renderItemTask = ({item, onPressTask}) => {
   return (
-      <View style={styles.task} key={item.id}>
-          <Text style={styles.taskText}>{item.task}</Text>
-      </View>
+        <Pressable onPress={() => onPressTask(item)}>
+            <View style={styles.task} key={item.id}>
+               <Text style={styles.taskText}>{item.task}</Text>
+            </View>
+        </Pressable>
+      
   )
 }
 
@@ -23,6 +26,7 @@ const MainScreen = () => {
   const [list, setList] = useState([])
   const [input, setInput] = useState("")
   const [modalVisible, setModalVisible] = useState(false);
+  const [tasActive, setTaskActive] = useState({})
 
   const onAddTask = () => {
       console.log("Se agregó una task");
@@ -35,6 +39,18 @@ const MainScreen = () => {
           }
       ])
   }
+  const onPressTask = (task) => {
+    console.log(task)
+    setTaskActive(task)
+    setModalVisible(!modalVisible)
+ }
+ const onPressHecho = () => {
+
+ }
+ 
+ const onPressIncompleto = () => {
+    
+ }
 
   console.log(list);
 
@@ -58,14 +74,10 @@ const MainScreen = () => {
               <FlatList
                   data = {list}
                   keyExtractor={task => task.id}
-                  renderItem={renderItemTask}
+                  renderItem={({item})=> renderItemTask({item,onPressTask})}
               />
             
-              <Pressable
-                  style={[styles.button, styles.buttonOpen]}
-                  onPress={() => setModalVisible(true)}>
-                  <Text style={styles.textStyle}>Show Modal</Text>
-              </Pressable>
+              
           </View>
 
           <Modal
@@ -77,12 +89,25 @@ const MainScreen = () => {
               }}>
               <View style={styles.centeredView}>
                   <View style={styles.modalView}>
-                      <Text style={styles.modalText}>Hello World!</Text>
-                      <Pressable
-                      style={[styles.button, styles.buttonClose]}
-                      onPress={() => setModalVisible(!modalVisible)}>
-                          <Text style={styles.textStyle}>Hide Modal</Text>
-                      </Pressable>
+                      <Text style={styles.modalText}>{tasActive.task}</Text>
+                      <View style={styles.buttonContainer}>
+                        <Pressable
+                         style={[styles.button, styles.buttonHecho]}
+                         onPress={() => setModalVisible(!modalVisible)}>
+                          <Text style={styles.textStyle}>Hecho</Text>
+                        </Pressable>
+                        <Pressable
+                         style={[styles.button, styles.buttonIncompleto]}
+                         onPress={() => setModalVisible(!modalVisible)}>
+                          <Text style={styles.textStyle}>Incompleto</Text>
+                        </Pressable>
+                        <Pressable
+                         style={[styles.button, styles.buttonCancelar]}
+                         onPress={() => setModalVisible(!modalVisible)}>
+                          <Text style={styles.textStyle}>Cancelar</Text>
+                        </Pressable>
+                      </View>
+                     
                   </View>
               </View>
           </Modal>
@@ -157,15 +182,19 @@ const styles = StyleSheet.create({
       marginTop: 22,
     },
   modalView: {
-  margin: 20,
-  backgroundColor: 'white',
-  borderRadius: 20,
-  padding: 35,
-  alignItems: 'center',
-  shadowColor: '#000',
-  shadowOffset: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
       width: 0,
       height: 2,
+  },
+  buttonContainer: {
+    flexDirection: row,
+    alignItems: center,
   },
   shadowOpacity: 0.25,
   shadowRadius: 4,
@@ -178,6 +207,12 @@ const styles = StyleSheet.create({
   },
   buttonOpen: {
   backgroundColor: '#F194FF',
+  },
+  buttonHecho: {
+    backgroundColor: 'green',
+  },
+  buttonIncompleto: {
+     backgroundColor: 'red',
   },
   buttonClose: {
   backgroundColor: '#2196F3',
